@@ -20,7 +20,7 @@ A collection of specialized bioinformatics sub-agents designed for coordinated m
 
 ## 🚀 Quick Start
 
-### 3-Step Installation
+### Safe 4-Step Installation
 
 ```bash
 # Step 1: Initialize Claude Code in your project
@@ -31,17 +31,42 @@ git clone https://github.com/yourusername/bioinfo_agents bioinfo_agents_temp
 
 # Step 3: Run the deployment script
 ./bioinfo_agents_temp/deploy.sh
+
+# Step 4: Clean up temp files
+./cleanup-bioinfo-agents.sh
 ```
 
-That's it! The script will:
+The script will:
 - Detect if you have an existing codebase or new project
 - Copy agents to `.claude/agents/`
 - Update your `CLAUDE.md` with agent documentation
 - Create `.agent_workspace/` structure
-- Clean up the temporary repo
+- Create a safe cleanup script for you to run
+
+**Safety First**: The deployment never deletes anything automatically. You control the cleanup step.
 
 ### Usage
 
+#### Implicit Invocation
+Claude Code automatically selects agents based on your request and the agent descriptions:
+
+```bash
+# These requests automatically trigger the appropriate agents
+claude "I need to build a variant calling pipeline for cancer genomics"
+# → Automatically invokes COMMS → ARCHITECT → ALGORITHM → DATA → VALIDATION
+
+claude "Help me optimize this slow FASTQ processing code"  
+# → Automatically invokes ALGORITHM (focuses on nf-core alternatives)
+
+claude "Create a comprehensive test strategy for my proteomics workflow"
+# → Automatically invokes VALIDATION (creates test stubs only)
+
+claude "Design data handling for multi-omics integration project"
+# → Automatically invokes DATA → ARCHITECT (focuses on format compatibility)
+```
+
+#### Explicit Invocation
+You can directly specify which agent to use:
 ```bash
 # Start a new genomics project
 claude --agent comms "Design RNA-seq differential expression pipeline"
@@ -216,7 +241,7 @@ Agents adapt their behavior based on selected domain:
 
 ## 🆘 Troubleshooting
 
-### Agent Not Found
+### Agent Not Being Used
 Ensure agents are in `.claude/agents/` and have proper YAML frontmatter.
 
 ### Coordination Issues  
@@ -236,6 +261,7 @@ Confirm VALIDATION agent never implements - only creates stubs with `NotImplemen
 claude init
 git clone <this-repo> bioinfo_agents_temp  
 ./bioinfo_agents_temp/deploy.sh
+./cleanup-bioinfo-agents.sh
 ```
 
-Then start with: `claude --agent comms "Design my genomics pipeline"` 🧬✨
+Then start with: `claude --agent comms "Analyze the RNA-seq fastqs in this folder: /path/to/data"` 🧬✨

@@ -1,20 +1,31 @@
 #!/bin/bash
 
-# Simple Bioinformatics Agents Deployment Script
-# Usage: ./deploy.sh
+# Safe Bioinformatics Agents Deployment Script
+# Usage: ./bioinfo_agents_temp/deploy.sh (from project root)
 
 set -e
 
 echo "🧬 Deploying Bioinformatics Agents..."
 
-# Check if we're in the right location
+# Safety checks
 if [[ ! -d "agents" ]]; then
     echo "ERROR: agents/ directory not found. Run this from the cloned repo directory."
     exit 1
 fi
 
-# Detect codebase type
-code_files=$(find . -maxdepth 3 \( -name "*.py" -o -name "*.R" -o -name "*.java" -o -name "*.js" -o -name "*.go" -o -name "*.rs" \) | wc -l)
+TEMP_DIR=$(basename "$(pwd)")
+if [[ ! "$TEMP_DIR" =~ bioinfo_agents ]]; then
+    echo "WARNING: Expected to be in bioinfo_agents directory, found: $TEMP_DIR"
+    read -p "Continue anyway? (y/N): " confirm
+    [[ ! "$confirm" =~ ^[Yy]$ ]] && exit 1
+fi
+
+# Detect codebase type in parent directory (actual project)
+cd ..
+PROJECT_DIR=$(pwd)
+echo "Deploying to project: $PROJECT_DIR"
+
+code_files=$(find . -name "$TEMP_DIR" -prune -o \( -name "*.py" -o -name "*.R" -o -name "*.java" -o -name "*.js" -o -name "*.go" -o -name "*.rs" \) -print | wc -l)
 if [[ $code_files -gt 50 ]]; then
     CODEBASE_TYPE="existing"
     echo "Detected: Existing codebase ($code_files files)"
@@ -27,8 +38,8 @@ fi
 mkdir -p .claude/agents
 echo "Created .claude/agents directory"
 
-# Copy agents
-cp agents/*.md .claude/agents/
+# Copy agents from temp directory
+cp "$TEMP_DIR/agents"/*.md .claude/agents/
 echo "Copied agents to .claude/agents/"
 
 # Create workspace structure
@@ -165,7 +176,29 @@ Agents use structured XML prompts with:
 EOF
 
 echo "Updated CLAUDE.md with agent system documentation"
+
+# Create safe cleanup script
+cat > cleanup-bioinfo-agents.sh << EOF
+#!/bin/bash
+echo "🗑️  Cleaning up bioinformatics agents temp directory..."
+if [[ -d "$TEMP_DIR" ]]; then
+    rm -rf "$TEMP_DIR"
+    echo "✅ Removed $TEMP_DIR"
+    rm -f cleanup-bioinfo-agents.sh
+    echo "✅ Cleanup complete!"
+else
+    echo "⚠️  Directory $TEMP_DIR not found (already removed?)"
+fi
+EOF
+
+echo ""
 echo "✅ Deployment complete!"
+echo ""
+echo "📁 Agents deployed to: .claude/agents/"
+echo "📁 Workspace created: .agent_workspace/"
+echo "📄 Documentation added to: CLAUDE.md"
+echo ""
+echo "🗑️  To remove temp files, run: ./cleanup-bioinfo-agents.sh"
 echo ""
 echo "Next steps:"
 echo "1. Start with: claude --agent comms \"[describe your biological project]\""
