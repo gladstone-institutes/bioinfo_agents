@@ -1,6 +1,6 @@
 # Bioinformatics Agents for Claude Code
 
-A collection of specialized bioinformatics sub-agents designed for coordinated multi-agent workflows with Claude Code. These agents provide intelligent, domain-aware assistance for bioinformatics development projects.
+A collection of specialized bioinformatics sub-agents designed for coordinated multi-agent workflows with Claude Code.
 
 # Subagent Design Guide
 
@@ -15,7 +15,7 @@ A collection of specialized bioinformatics sub-agents designed for coordinated m
 - Execute predefined operations only
 - Never make analytical decisions
 - Never interpret context or meaning
-- Avoid "evaluation", "analysis", "research", "planning"
+- Avoid "evaluation", "analysis", "research"
 
 ### 3. Clear Boundaries
 - Explicit "NEVER does X" statements
@@ -35,20 +35,15 @@ tools: [minimal tool list]
 
 ## Good Examples
 
-**File Watcher Agent**
-- Does: Detects file changes, triggers notifications
-- Never: Processes file contents, makes decisions about changes
-- Single purpose: File event detection
+**URL Extractor Agent**
+- Does: Extracts URLs from text or documents
+- Never: Validates URLs or analyzes link quality
+- Single purpose: URL pattern matching
 
-**Checksum Generator Agent**
-- Does: Generates and compares checksums
-- Never: Determines data quality or interprets results
-- Single purpose: Checksum operations
-
-**Test Writer Agent**
-- Does: Creates test stubs and templates
-- Never: Implements actual tests or logic
-- Single purpose: Test stub generation
+**Environment Reader Agent**
+- Does: Detects system environment details (language versions, tool paths, OS info)
+- Never: Recommends upgrades or interprets compatibility issues
+- Single purpose: System environment detection
 
 ## Bad Examples
 
@@ -99,3 +94,76 @@ tools: [minimal tool list]
 4. Would you be comfortable with this running automatically?
 
 If any answer is "no", the agent needs simplification.
+
+## Creating Subagents
+
+### File Structure
+
+Subagents are defined as Markdown files in the `.claude/agents/` directory, either in your project directory or your user home directory:
+```
+.claude/agents/
+├── agent-name.md        
+```
+
+1. Project directory (.claude/agents/) - **Highest priority**
+2. User directory (~/.claude/agents/) - Lower priority
+
+If you want to project specific behaviors then copy your subagents into the project directory and then customize.
+
+### Easy Subagent Creation
+
+Use the claude code `/agents` to create and manage agents. You can have claude create a subagent from a prompt and then customize it to your needs.
+
+
+### YAML Frontmatter Format
+
+Every agent file starts with YAML frontmatter:
+
+```yaml
+---
+name: agent-name                 # Required: kebab-case identifier
+description: [Task] agent for [domain]. Focused responsibility - [specific action] (NEVER [related but different action]). Single clear purpose - [action] only. Use for [specific use case].  # Required: follows template
+tools: Read, Write, Edit, Bash   # Required: minimal tool list
+color: cyan                      # Optional: display color
+model: inherit                   # Optional: model configuration
+---
+```
+
+### Content Structure
+
+After the frontmatter, structure your agent with:
+
+1. **Role Definition**: Clear statement of what the agent does
+2. **Critical Rule**: The core constraint (usually "NEVER does X")
+3. **Primary Tasks**: Specific operations the agent performs
+4. **Templates**: XML-structured mandatory outputs
+5. **Examples**: Concrete usage demonstrations
+6. **Key Principles**: Reinforcement of boundaries
+
+### Step-by-Step Creation Process
+
+1. **Choose a Single Action**: Pick one mechanical task (e.g., "parse", "extract", "generate")
+
+2. **Create the File**: Create `agents/your-agent.md`
+
+3. **Write Frontmatter**: Use the template above, following existing patterns
+
+4. **Define Boundaries**: Include clear "NEVER does" statements
+
+5. **Create Templates**: Provide XML-structured output formats
+
+6. **Add Examples**: Show concrete usage scenarios
+
+7. **Test Integration**: Verify the agent works with Claude Code's Task tool
+
+### Integration with Claude Code
+
+Agents integrate through the Task tool's `subagent_type` parameter:
+
+### Examples in This Repository
+
+- **test-writer**: Creates test stubs (never implements actual tests)
+- **log-parser**: Extracts structured data (never analyzes trends)
+- **todo-scanner**: Finds TODO comments (comprehensive pattern matching)
+
+Each agent demonstrates different aspects of the design principles while maintaining strict single-purpose focus.

@@ -2,6 +2,7 @@
 name: test-writer
 description: Test stub generator for bioinformatics pipelines. Focused responsibility - creating test stubs and templates (NEVER implements actual tests). Single clear purpose - test stub creation only. Use for test template generation.
 tools: Read, Write, Edit, Bash
+color: cyan
 ---
 
 # VALIDATION - Test Design Agent

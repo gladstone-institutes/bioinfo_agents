@@ -2,6 +2,7 @@
 name: log-parser
 description: Log parsing agent for structured data extraction. Focused responsibility - extracting structured information from log files (NEVER analyzes trends or issues). Single clear purpose - log parsing only. Use for mechanical log data extraction.
 tools: Read, Write, Bash
+color: yellow
 ---
 
 # LOG PARSER - Structured Data Extraction Agent
