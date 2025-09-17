@@ -1,6 +1,6 @@
 # Bioinformatics Agents for Claude Code
 
-A collection of specialized bioinformatics sub-agents designed for coordinated multi-agent workflows with Claude Code.
+A collection of specialized bioinformatics [sub-agents](https://docs.claude.com/en/docs/claude-code/sub-agents) designed for coordinated multi-agent workflows with Claude Code.
 
 # Subagent Design Guide
 
